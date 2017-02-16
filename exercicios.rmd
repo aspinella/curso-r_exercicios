@@ -1,0 +1,118 @@
+---
+title: "Exercicios"
+author: "Alef Spinella"
+date: "16 de fevereiro de 2017"
+output: html_document
+---
+```{r}
+library(ggplot2)
+library(magrittr)
+library(dplyr)
+library(forcats)
+library(readr)
+library(tidyr)
+```
+
+#Exercicios
+##Aula 2
+
+####Crie o data.frame que é impresso da seguinte forma:
+```{r}
+dt<-data.frame(id_aluno=c(1:5),
+               opiniao = c("amei","dahora","mto legal","Show",NA),
+               veio_para_aula = c(TRUE,TRUE,TRUE,TRUE,FALSE)
+               )
+lista <-list(id_aluno=c(1:5),
+               opiniao = c("amei","dahora","mto legal","Show",NA),
+               veio_para_aula = c(TRUE,TRUE,TRUE,TRUE,FALSE)
+            )
+attr(lista,"row.names") = 1:5
+attr(lista,"class") = "data.frame"
+View(lista)
+View(dt)
+```
+####v1 <- c(a = 1, b = 2, c = 3, d = 4, e = 5, f = 6, g = 7)
+a) Selecione os elementos de índice ímpar de v1 usando um vetor de inteiros
+b) Selecione os elementos de índice par de v1 usando um vetor de booleanos
+c) Selecione os três últimos índices de v1 usando um vetor de inteiros
+d) Ordene as entradas de v1 de trás para frente usando um vetor de strings. O vetor resultante deve ser
+```{r}
+v1 <- c(a = 1, b = 2, c = 3, d = 4, e = 5, f = 6, g = 7)
+#a
+a=v1%%2>0
+v1[a]
+#b
+b=v1%%2==0
+v1[b]
+#c
+c=c(5,6,7)
+v1[c]
+#d
+d=c("g","f","e","d","c","b","a")
+v1[d]
+```
+####Escreva uma regex que represente todos os comentários com risadas que riem com um número par de "k"'s (ignorando a caixa alta e baixa).
+```{r}
+#str_view(comentarios$texto, "([^Kk]|^)([Kk]k)+([^k]|$)", match = NA)
+```
+##Aula 4
+1 - Refaça o primeiro gráfico (arrecadação vs orçamento) colocando junto dos pontos uma curva alisada. Dica: geom_smooth().
+
+2. Refazer o gráfico das notas do Tarantino, Scorsese e Tim Burton colocando as curvas no mesmo gráfico e as seprando pela cor. Dica: você vai precisar usar o argumento 'group='.
+
+3. Faça um gráfico para visualizar as 10 maiores bilheterias de 2016.
+
+4. Faça um gráfico para visualizar as notas dos filmes do seu ator ou diretor preferido. Se você não tiver um (ou se tiver poucas entradas no banco de dados), escolha uma opção a seguir:
+
+- Steven Spielberg.
+- Zack Snyder
+- Robin Williams
+- Hugh jackman
+- Jennifer Lawrence
+- Meryl Streep
+
+####1
+```{r}
+dados <- read_rds("./aula4/inputs/dados_imdb.rds")
+dados %>% 
+  filter(country == "USA") %>%
+  ggplot(aes(x = budget, y = gross)) +
+  geom_point() +
+  geom_smooth()
+  
+```
+####2
+```{r}
+dados %>% 
+  filter(director_name %in% c("Quentin Tarantino", "Martin Scorsese", "Tim Burton")) %>% 
+  ggplot(aes(x = title_year, y = imdb_score, color = director_name, group = director_name)) +
+  geom_point() +
+  geom_line()
+```
+####3
+```{r}
+dados %>% 
+  select(movie_title,gross,country) %>%
+  filter(country == "USA") %>%
+  arrange(desc(gross)) %>%
+  slice(1:10) %>%
+  group_by(movie_title) %>%
+  ggplot() +
+  geom_bar(aes(x = movie_title,y=gross), stat = "identity",fill = "dark green", color = "white") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+####4
+```{r}
+dados %>% 
+  select(movie_title,imdb_score,country,director_name) %>%
+  filter(country == "USA", director_name== "Quentin Tarantino") %>%
+  arrange(desc(imdb_score)) %>%
+  mutate(movie_title = movie_title %>% as.factor %>%
+           fct_reorder(imdb_score, median)) %>%
+  ggplot() +
+  geom_bar(aes(x = movie_title,y=imdb_score), stat = "identity",fill = "dark green", color = "white") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+
+
