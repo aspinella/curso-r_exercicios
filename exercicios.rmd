@@ -53,7 +53,7 @@ v1[d]
 ```
 ####Escreva uma regex que represente todos os comentários com risadas que riem com um número par de "k"'s (ignorando a caixa alta e baixa).
 ```{r}
-#str_view(comentarios$texto, "([^Kk]|^)([Kk]k)+([^k]|$)", match = NA)
+str_view(comentarios$texto, "([^Kk]|^)([Kk]k)+([^k]|$)", match = NA)
 ```
 ##Aula 4
 1 - Refaça o primeiro gráfico (arrecadação vs orçamento) colocando junto dos pontos uma curva alisada. Dica: geom_smooth().
